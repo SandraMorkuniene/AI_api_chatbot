@@ -34,11 +34,6 @@ if not st.session_state.api_key_confirmed:
 else:
     st.sidebar.success("API Key set and confirmed.")
 
-if st.sidebar.button("🔄 Reset API Key"):
-    for key in ["api_key_confirmed", "openai_api_key"]:
-        if key in st.session_state:
-            del st.session_state[key]
-    st.rerun()
 	
 if st.session_state.api_key_confirmed:
 	# Lock in mode choice
