@@ -13,8 +13,25 @@ import csv
 import re
 from io import StringIO
 import os
+import openai
 
+# Utility: Format check (basic)
+def is_valid_key_format(key: str) -> bool:
+    return key.startswith("sk-") and (len(key) in [49, 60])  # Common lengths for OpenAI keys
 
+# Utility: Live API check (calls OpenAI to verify the key works)
+def is_valid_openai_key_live(key: str) -> bool:
+    try:
+        openai.api_key = key
+        openai.Model.list()  # Lightweight test call
+        return True
+    except openai.error.AuthenticationError:
+        return False
+    except Exception as e:
+        st.sidebar.error(f"Unexpected error during validation: {e}")
+        return False
+
+# API logic
 if "api_key_confirmed" not in st.session_state:
     st.session_state.api_key_confirmed = False
 if "openai_api_key" not in st.session_state:
@@ -24,15 +41,22 @@ st.sidebar.header("🔑 API Key Setup")
 
 if not st.session_state.api_key_confirmed:
     st.session_state.openai_api_key = st.sidebar.text_input("Enter your OpenAI API Key", type="password")
+
     if st.sidebar.button("✅ Confirm API Key"):
-        if st.session_state.openai_api_key.startswith("sk-"):
-            os.environ["OPENAI_API_KEY"] = st.session_state.openai_api_key
+        key = st.session_state.openai_api_key.strip()
+
+        if not is_valid_key_format(key):
+            st.sidebar.error("❌ Invalid key format. Must start with 'sk-' and be of proper length.")
+        elif not is_valid_openai_key_live(key):
+            st.sidebar.error("❌ Invalid or unauthorized API key. Please check your key or subscription.")
+        else:
+            os.environ["OPENAI_API_KEY"] = key
+            openai.api_key = key
             st.session_state.api_key_confirmed = True
             st.rerun()
-        else:
-            st.sidebar.error("Invalid API key format.")
 else:
-    st.sidebar.success("API Key set and confirmed.")
+    st.sidebar.success("✅ API Key set and confirmed.")
+
 
 	
 if st.session_state.api_key_confirmed:
