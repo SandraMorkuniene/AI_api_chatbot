@@ -24,7 +24,7 @@ def is_valid_key_format(key: str) -> bool:
 def is_valid_openai_key_live(key: str) -> bool:
     try:
         openai.api_key = key
-        openai.Model.list()  # Lightweight test call
+        openai.Completion.create(engine="text-davinci-003", prompt="Test", max_tokens=5)
         return True
     except Exception as e:
         if "AuthenticationError" in str(type(e)):
