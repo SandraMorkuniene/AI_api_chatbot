@@ -26,9 +26,8 @@ def is_valid_openai_key_live(key: str) -> bool:
         openai.api_key = key
         openai.Completion.create(engine="text-davinci-003", prompt="Test", max_tokens=5)
         return True
-    except Exception as e:
-        if "AuthenticationError" in str(type(e)):
-            return False
+     except openai.error.AuthenticationError:
+        return False
         else:
             st.sidebar.error(f"Unexpected error during validation: {e}")
             return False
