@@ -14,7 +14,7 @@ import re
 from io import StringIO
 import os
 import openai
-from openai.error import AuthenticationError
+
 
 # Utility: Format check (basic)
 def is_valid_key_format(key: str) -> bool:
