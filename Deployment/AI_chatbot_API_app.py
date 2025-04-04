@@ -24,13 +24,15 @@ def is_valid_key_format(key: str) -> bool:
 def is_valid_openai_key_live(key: str) -> bool:
     try:
         openai.api_key = key
+        # Use the new method to check if the key is valid
         openai.Completion.create(engine="text-davinci-003", prompt="Test", max_tokens=5)
         return True
-     except openai.error.AuthenticationError:
+    except openai.error.AuthenticationError:
         return False
-        else:
-            st.sidebar.error(f"Unexpected error during validation: {e}")
-            return False
+    except Exception as e:
+        st.sidebar.error(f"Unexpected error during validation: {e}")
+        return False
+
 
 # API logic
 if "api_key_confirmed" not in st.session_state:
