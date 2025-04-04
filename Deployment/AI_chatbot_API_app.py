@@ -17,9 +17,7 @@ import openai
 
 # Utility: Format check (basic)
 def is_valid_key_format(key: str) -> bool:
-    return key.startswith("sk-") and
-        len(key) >= 48 and len(key) <= 60 and
-        re.fullmatch(r"sk-[A-Za-z0-9]{20,}", key)
+    return key.startswith("sk-") and len(key) >= 48 and len(key) <= 60 and re.fullmatch(r"sk-[A-Za-z0-9]{20,}", key)
 
 # Utility: Live API check (calls OpenAI to verify the key works)
 def is_valid_openai_key_live(key: str) -> bool:
