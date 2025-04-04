@@ -15,22 +15,31 @@ from io import StringIO
 import os
 
 
-# Initialize session state
-if 'chat_history' not in st.session_state:
-    st.session_state.chat_history = []
-if 'openai_api_key' not in st.session_state:
+if "api_key_confirmed" not in st.session_state:
+    st.session_state.api_key_confirmed = False
+if "openai_api_key" not in st.session_state:
     st.session_state.openai_api_key = ""
-if 'api_confirmed' not in st.session_state:
-    st.session_state.api_confirmed = False
 
-# Sidebar - User API Key & Model Settings
-st.sidebar.header("🔑 OpenAI API Key")
-api_key = st.sidebar.text_input("Enter your OpenAI API key", type="password")
-if st.sidebar.button("Confirm API Key"):
-    st.session_state.openai_api_key = api_key
-    st.session_state.api_confirmed = True
-    st.sidebar.success("API Key Confirmed!")
+st.sidebar.header("🔑 API Key Setup")
 
+if not st.session_state.api_key_confirmed:
+    st.session_state.openai_api_key = st.sidebar.text_input("Enter your OpenAI API Key", type="password")
+    if st.sidebar.button("✅ Confirm API Key"):
+        if st.session_state.openai_api_key.startswith("sk-"):
+            os.environ["OPENAI_API_KEY"] = st.session_state.openai_api_key
+            st.session_state.api_key_confirmed = True
+            st.experimental_rerun()
+        else:
+            st.sidebar.error("Invalid API key format.")
+else:
+    st.sidebar.success("API Key set and confirmed.")
+
+if st.sidebar.button("🔄 Reset API Key"):
+    for key in ["api_key_confirmed", "openai_api_key"]:
+        if key in st.session_state:
+            del st.session_state[key]
+    st.rerun()
+	
 
 # Lock in mode choice
 if "mode_locked" not in st.session_state:
