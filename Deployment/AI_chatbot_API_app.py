@@ -26,11 +26,12 @@ def is_valid_openai_key_live(key: str) -> bool:
         openai.api_key = key
         openai.Model.list()  # Lightweight test call
         return True
-    except openai.error.AuthenticationError:
-        return False
     except Exception as e:
-        st.sidebar.error(f"Unexpected error during validation: {e}")
-        return False
+        if "AuthenticationError" in str(type(e)):
+            return False
+        else:
+            st.sidebar.error(f"Unexpected error during validation: {e}")
+            return False
 
 # API logic
 if "api_key_confirmed" not in st.session_state:
