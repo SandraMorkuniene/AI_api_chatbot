@@ -28,7 +28,7 @@ if not st.session_state.api_key_confirmed:
         if st.session_state.openai_api_key.startswith("sk-"):
             os.environ["OPENAI_API_KEY"] = st.session_state.openai_api_key
             st.session_state.api_key_confirmed = True
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.sidebar.error("Invalid API key format.")
 else:
