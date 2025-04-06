@@ -14,24 +14,31 @@ import re
 from io import StringIO
 import os
 import openai
-
+from openai import OpenAI, OpenAIError, AuthenticationError
 
 # Utility: Format check (basic)
 def is_valid_key_format(key: str) -> bool:
     return key.startswith("sk-") and len(key) >= 30
 
-# Utility: Live API check (calls OpenAI to verify the key works)
+# Live API check (calls OpenAI to verify the key works)
 def is_valid_openai_key_live(key: str) -> bool:
     try:
-        openai.api_key = key
-        # Use the new method to check if the key is valid
-        openai.Completion.create(engine="text-davinci-003", prompt="Test", max_tokens=5)
+        client = OpenAI(api_key=key)  # New client-based method
+        client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": "Hello"}],
+            max_tokens=5
+        )
         return True
-    except openai.error.AuthenticationError:
+    except AuthenticationError:
+        return False
+    except OpenAIError as e:
+        st.sidebar.error(f"Unexpected OpenAI error: {e}")
         return False
     except Exception as e:
         st.sidebar.error(f"Unexpected error during validation: {e}")
         return False
+
 
 
 # API logic
@@ -54,7 +61,7 @@ if not st.session_state.api_key_confirmed:
             st.sidebar.error("❌ Invalid or unauthorized API key. Please check your key or subscription.")
         else:
             os.environ["OPENAI_API_KEY"] = key
-            openai.api_key = key
+            #openai.api_key = key
             st.session_state.api_key_confirmed = True
             st.rerun()
 else:
