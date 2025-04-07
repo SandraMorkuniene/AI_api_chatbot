@@ -93,7 +93,7 @@ if st.session_state.api_key_confirmed:
 	st.title("🤖 AI Chatbot - Ask Me Anything!")
 		
 	st.sidebar.header("⚙️ Model Settings")
-	st.session_state.model_choice = st.sidebar.selectbox("Choose Model", ["gpt-3.5-turbo", "gpt-4"], index=0)
+	st.session_state.model_choice = st.sidebar.selectbox("Choose Model", ["gpt-3.5-turbo", "gpt-4", "gpt-4o"], index=0)
 	st.session_state.model_creativity = st.sidebar.slider("Model Creativity (Temperature)", 0.0, 1.0, 0.7, 0.1)
 	st.session_state.response_length_words = st.sidebar.slider("Response Length (Words)", 50, 500, 150, 10)
 	
