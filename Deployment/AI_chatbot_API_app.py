@@ -200,7 +200,7 @@ if st.session_state.api_key_confirmed:
 	    uploaded_files = None  # Prevent uploads in chat-only mode
 	
 	
-	# --- Detect file changes and update memory + FAISS ---
+	# Detect file changes and update memory + FAISS
 	def file_key(file):
 	    return (file.name, file.size)
 	
@@ -263,6 +263,7 @@ if st.session_state.api_key_confirmed:
 	                    messages + [system_message, user_message]
 	                ) 
 	                st.session_state.memory.chat_memory.add_ai_message(response.content)
+			st.chat_message("user").write(user_message.content)    
 	                st.chat_message("assistant").write(response.content)
 	
 	        else:
