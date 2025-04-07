@@ -1,4 +1,3 @@
-
 import streamlit as st
 from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -200,7 +199,7 @@ if st.session_state.api_key_confirmed:
 	    uploaded_files = None  # Prevent uploads in chat-only mode
 	
 	
-	# Detect file changes and update memory + FAISS
+	# --- Detect file changes and update memory + FAISS ---
 	def file_key(file):
 	    return (file.name, file.size)
 	
@@ -241,31 +240,35 @@ if st.session_state.api_key_confirmed:
 	        st.chat_message("assistant").markdown(message.content)
 	
 	if st.session_state.mode_locked and st.session_state.model_confirmed:
-	        query = st.chat_input("Ask a question:")
+	    query = st.chat_input("Ask a question:")
 	
-	        if query:
-	            if is_input_safe(query):
-	                st.chat_message("user").write(query)
-	                if st.session_state.uploaded_files:
-	                    retriever = st.session_state.uploaded_files.as_retriever(search_kwargs={"k": 2})
-	                    qa_chain = ConversationalRetrievalChain.from_llm(
-	                        llm=llm, retriever=retriever, memory=st.session_state.memory
-	                    )
-	                    response = qa_chain.run(query)
-	                    if not any(msg.content == response for msg in st.session_state.memory.chat_memory.messages):
-	                        st.session_state.memory.chat_memory.add_ai_message(response)
-	                    st.chat_message("assistant").write(response)
-	                else:
-	                    system_message = SystemMessage(content=SYSTEM_PROMPT)
-	                    user_message = HumanMessage(content=query)
-	                    messages = st.session_state.memory.chat_memory.messages
-	                    response = llm.invoke(messages + [system_message, user_message])
-	                    st.session_state.memory.chat_memory.add_ai_message(response.content)
-	                    st.chat_message("assistant").write(response.content)
+	    if query:
+	        if is_input_safe(query):
+	            st.chat_message("user").write(query)
+		    if st.session_state.uploaded_files:
+	                retriever = st.session_state.uploaded_files.as_retriever(search_kwargs={"k": 2})
+	                qa_chain = ConversationalRetrievalChain.from_llm(
+	                    llm=llm, retriever=retriever, memory=st.session_state.memory
+	                )
+	                response = qa_chain.run(query)
+	                if not any(msg.content == response for msg in st.session_state.memory.chat_memory.messages):
+	                    st.session_state.memory.chat_memory.add_ai_message(response)
+	                st.chat_message("assistant").write(response)
 	            else:
-	                st.warning("⚠️ Your query contains unsafe content and was not processed.")
-			            st.session_state.memory.chat_memory.add_ai_message(warning)
-			            st.chat_message("assistant").write(warning)
+	                system_message = SystemMessage(content=SYSTEM_PROMPT)
+	                user_message = HumanMessage(content=query)
+	                
+	                messages = st.session_state.memory.chat_memory.messages
+	                response = llm.invoke(
+	                    messages + [system_message, user_message]
+	                ) 
+	                st.session_state.memory.chat_memory.add_ai_message(response.content)
+	                st.chat_message("assistant").write(response.content)
+	
+	        else:
+	            warning = "⚠️ Your query violates content policies."
+	            st.session_state.memory.chat_memory.add_ai_message(warning)
+	            st.chat_message("assistant").write(warning)
 	
 	else:
 	    st.warning("Lock the mode and confirm model settings before asking questions.")
@@ -290,5 +293,3 @@ if st.session_state.api_key_confirmed:
 
 else:
     st.warning("Please enter and confirm your OpenAI API key to start.")
-
-
