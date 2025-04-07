@@ -245,6 +245,7 @@ if st.session_state.api_key_confirmed:
 	
 	    if query:
 	        if is_input_safe(query):
+			st.chat_message("user").write(query)	
 	            if st.session_state.uploaded_files:
 	                retriever = st.session_state.uploaded_files.as_retriever(search_kwargs={"k": 2})
 	                qa_chain = ConversationalRetrievalChain.from_llm(
@@ -262,8 +263,7 @@ if st.session_state.api_key_confirmed:
 	                response = llm.invoke(
 	                    messages + [system_message, user_message]
 	                ) 
-	                st.session_state.memory.chat_memory.add_ai_message(response.content)
-			st.chat_message("user").write(user_message.content)    
+	                st.session_state.memory.chat_memory.add_ai_message(response.content)   
 	                st.chat_message("assistant").write(response.content)
 	
 	        else:
