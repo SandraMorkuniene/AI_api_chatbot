@@ -121,13 +121,13 @@ if st.session_state.api_key_confirmed:
 	def is_input_safe(user_input: str) -> bool:
 	    """Check if the input is safe to process."""
 	    dangerous_patterns = [
-	        r"(system|os|subprocess|import|open|globals|locals|__import__|__globals__|__dict__|__builtins__)",
+	        r"\b(system|os|subprocess|import|open|globals|locals|__import__|__globals__|__dict__|__builtins__)\b",
 	        r"(sudo|rm -rf|chmod|chown|mkfs|:(){:|fork bomb|shutdown)",
-	        r"(simulate being|ignore previous instructions|bypass|jailbreak|pretend to be|hack|scam )",
+	        r"\b(simulate being|ignore previous instructions|bypass|jailbreak|pretend to be|hack|scam )\b",
 	        r"(<script>|</script>|<iframe>|javascript:|onerror=)",
 	        r"(base64|decode|encode|pickle|unpickle)",
 	        r"(http[s]?://|ftp://|file://)",
-	        r"(manipulate|modify system prompt|alter assistant behavior)"
+	        r"\b(manipulate|modify system prompt|alter assistant behavior)\b"
 	    ]
 	    return not any(re.search(pattern, user_input, re.IGNORECASE) for pattern in dangerous_patterns)
 	
